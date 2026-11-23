@@ -5,7 +5,7 @@ import json
 from github import Github, GithubException
 
 #实例化创建AI对象
-client = OpenAI(api_key=st.secrets("API_KEY"), base_url="https://api.deepseek.com")
+client = OpenAI(api_key=st.secrets["API_KEY"], base_url="https://api.deepseek.com")
 
 
 #创建世界的时间
