@@ -40,14 +40,9 @@ if 'delete_dirty_mark' not in st.session_state:
 if 'history_session_repo' not in st.session_state:
     st.session_state.history_session_repo = {}
 
-#读取session_datas文件下的世界信息文件函数
+#读取st.session.history_session_repo的文件名
 def load_session_list():
-    session_list = []
-    if os.path.exists("session_datas"):
-        file_list = os.listdir("session_datas")
-        for file in file_list:
-            if file.endswith(".json"):
-                session_list.append(file[:-9])
+    session_list = st.session_state.history_session_repo.keys()
     return session_list
 
 #保存当前会话的信息函数
