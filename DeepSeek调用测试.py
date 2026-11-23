@@ -3,6 +3,7 @@ from openai import OpenAI
 import streamlit as st
 from datetime import datetime
 import json
+from github import Github
 
 #实例化创建AI对象
 client = OpenAI(api_key=st.secrets["API_KEY"],base_url="https://api.deepseek.com")
@@ -37,6 +38,42 @@ def load_session_list():
                 session_list.append(file[:-9])
     return session_list
 
+#获得github的公开仓库
+def get_github_rpeo():
+    #从secrets读取token，创建Github实例
+    github = Github(login_or_token=st.secrets["GITHUB_TOKEN"])
+
+    #获取github仓库
+    repo = github.get_repo("sukisino/Streamlit_ai_rbg")
+    return repo
+
+#保存当前会话到github仓库
+def save_session_to_github(session_datas: dict,file_path: str = f"session_datas/{session}信息文件.json"):
+    repo = get_github_rpeo()
+    content = json.dumps(session_datas, ensure_ascii=False, indent=2)
+
+    try:
+        existing = repo.get_contents(file_path)
+        repo.update_file(
+            path=file_path,
+            message="更新对话信息",
+            content=content,
+            sha=existing.sha,
+        )
+    except Exception:
+        repo.create_file(
+            path=file_path,
+            message="创建对话记录",
+            content=content,
+        )
+
+#从github中读取
+def load_session_to_github(file_path: str = f"session_datas/{session}信息文件.json"):
+    file_content = repo.get_contents(file_path)
+    session_datas_to_github = json.loads(file_content.decoded_content.decode("utf-8"))
+    return session_datas_to_github
+
+
 #保存当前会话的信息函数
 def save_session(file_format="json", file_indent=2):
     if st.session_state.world_name:
@@ -59,12 +96,20 @@ def save_session(file_format="json", file_indent=2):
 #加载相应会话函数
 def load_session(session):
     if os.path.exists(f"session_datas/{session}信息文件.json"):
+
+        session_datas_to_github = load_session_to_github()
+        with open(f"session_datas/{st.session_state.world_label}信息文件.{file_format}", "w", encoding="utf-8") as f:
+            json.dump(session_datas_to_github, f, ensure_ascii=False, indent=file_indent)
+
         with open(f"session_datas/{session}信息文件.json", "r", encoding="utf-8") as f:
             session_data = json.load(f)
             st.session_state.world_label = session_data["world_label"]
             st.session_state.messages = session_data['world_messages']
             st.session_state.world_name = session_data["world_name"]
             st.session_state.world_information = session_data["world_information"]
+
+
+            #----------------------------------------保存文件名错误
 
 #删除相应会话函数
 def delete_session(session):
@@ -88,6 +133,7 @@ with st.sidebar:
         if st.session_state.messages:
             #保存当前会话信息
             save_session()
+            save_session_to_github()
 
             #创建新的会话
             st.session_state.messages = []
@@ -95,6 +141,7 @@ with st.sidebar:
             st.session_state.world_label = f'世界{st.session_state.create_time}'
             st.session_state.world_name = f'世界{st.session_state.create_time}'
             save_session()
+            save_session_to_github()
 
     #历史世界管理面板
     st.text("历史世界记录")
@@ -108,6 +155,7 @@ with st.sidebar:
                 if st.session_state.messages:
                     #先保存当前会话再加载目标会话
                     save_session()
+                    save_session_to_github()
                     load_session(history_world)
                     st.rerun()
                 else:
@@ -138,6 +186,8 @@ prompt = st.chat_input("")
 if prompt:
     st.chat_message("user").write(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
+    save_session()
+    save_session_to_github()
 
     #调用AI大模型
     response = client.chat.completions.create(
@@ -161,3 +211,5 @@ if prompt:
 
     #记录ai对话
     st.session_state.messages.append({"role": "assistant", "content": replys})
+    save_session()
+    save_session_to_github()
