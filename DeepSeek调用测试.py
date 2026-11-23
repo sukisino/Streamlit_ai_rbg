@@ -48,7 +48,7 @@ def get_github_rpeo():
     return repo
 
 #保存当前会话到github仓库
-def save_session_to_github(session_datas: dict,file_path: str = f"session_datas/{session}信息文件.json"):
+def save_session_to_github(session_datas: dict,file_path: str):
     repo = get_github_rpeo()
     content = json.dumps(session_datas, ensure_ascii=False, indent=2)
 
@@ -68,7 +68,7 @@ def save_session_to_github(session_datas: dict,file_path: str = f"session_datas/
         )
 
 #从github中读取
-def load_session_to_github(file_path: str = f"session_datas/{session}信息文件.json"):
+def load_session_to_github(file_path: str):
     file_content = repo.get_contents(file_path)
     session_datas_to_github = json.loads(file_content.decoded_content.decode("utf-8"))
     return session_datas_to_github
@@ -97,7 +97,7 @@ def save_session(file_format="json", file_indent=2):
 def load_session(session):
     if os.path.exists(f"session_datas/{session}信息文件.json"):
 
-        session_datas_to_github = load_session_to_github()
+        session_datas_to_github = load_session_to_github(f"session_datas/{session}信息文件.json")
         with open(f"session_datas/{st.session_state.world_label}信息文件.{file_format}", "w", encoding="utf-8") as f:
             json.dump(session_datas_to_github, f, ensure_ascii=False, indent=file_indent)
 
@@ -133,7 +133,7 @@ with st.sidebar:
         if st.session_state.messages:
             #保存当前会话信息
             save_session()
-            save_session_to_github()
+            save_session_to_github(f"session_datas/{session}信息文件.json")
 
             #创建新的会话
             st.session_state.messages = []
@@ -141,7 +141,7 @@ with st.sidebar:
             st.session_state.world_label = f'世界{st.session_state.create_time}'
             st.session_state.world_name = f'世界{st.session_state.create_time}'
             save_session()
-            save_session_to_github()
+            save_session_to_github(f"session_datas/{session}信息文件.json")
 
     #历史世界管理面板
     st.text("历史世界记录")
@@ -155,7 +155,7 @@ with st.sidebar:
                 if st.session_state.messages:
                     #先保存当前会话再加载目标会话
                     save_session()
-                    save_session_to_github()
+                    save_session_to_github(f"session_datas/{session}信息文件.json")
                     load_session(history_world)
                     st.rerun()
                 else:
@@ -187,7 +187,7 @@ if prompt:
     st.chat_message("user").write(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
     save_session()
-    save_session_to_github()
+    save_session_to_github(f"session_datas/{session}信息文件.json")
 
     #调用AI大模型
     response = client.chat.completions.create(
@@ -212,4 +212,4 @@ if prompt:
     #记录ai对话
     st.session_state.messages.append({"role": "assistant", "content": replys})
     save_session()
-    save_session_to_github()
+    save_session_to_github(f"session_datas/{session}信息文件.json")
