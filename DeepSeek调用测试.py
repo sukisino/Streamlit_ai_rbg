@@ -5,7 +5,7 @@ from datetime import datetime
 import json
 
 #实例化创建AI对象
-client = OpenAI(api_key=os.environ.get('DEEPSEEK_API_KEY'),base_url="https://api.deepseek.com")
+client = OpenAI(api_key=st.secrets["API_KEY"],base_url="https://api.deepseek.com")
 
 #创建世界的时间
 if 'create_time' not in st.session_state:
