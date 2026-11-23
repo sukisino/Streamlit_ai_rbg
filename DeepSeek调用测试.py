@@ -57,7 +57,7 @@ def save_session():
         }
 
         #将构建的对象储存在history_session_repo
-        st.session_state.history_session_rep[world_label] = session_data
+        st.session_state.history_session_repo[world_label] = session_data
 
         #将其标记上修改脏标签
         st.session_state.updata_dirty_mark.append(st.session_state.world_label)
