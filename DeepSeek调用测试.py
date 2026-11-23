@@ -147,7 +147,7 @@ with st.sidebar:
     world_information = st.text_area("当前世界世界信息", value=st.session_state.world_information)
     if world_information:
         st.session_state.world_information = world_information
-    if st.bottom("保存当前世界",width="stretch"):
+    if st.button("保存当前世界",width="stretch"):
         save_session()
 
 #侧边栏下部：新世界和历史世界管理面板
