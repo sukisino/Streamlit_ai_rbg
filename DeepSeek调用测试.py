@@ -56,19 +56,18 @@ def save_session():
             "world_messages": st.session_state.messages,
         }
 
-        #将构建的对象储存在history_world_repo
-        history_world_repo[world_label] = session_data
+        #将构建的对象储存在history_session_repo
+        history_session_repo[world_label] = session_data
 
         #将其标记上修改脏标签
         st.session_state.updata_dirty_mark.append(st.session_state.world_label)
 
 #获取相应会话函数
 def get_session(session):
-    if os.path.exists(f"session_datas/{session}信息文件.json"):
-        if st.session_state.messages:
-            save_session()
+    if st.session_state.messages:
+        save_session()
 
-        session_data = history_world_repo[session]
+    session_data = history_session_repo[session]
     return session_data
 
 #加载相应会话函数
