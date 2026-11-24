@@ -72,7 +72,7 @@ def get_session(session):
 
 #加载相应会话函数
 def load_session(session):
-    session_data = get_session(session_state)
+    session_data = get_session(session)
     st.session_state.world_label = session_data["world_label"]
     st.session_state.messages = session_data['world_messages']
     st.session_state.world_name = session_data["world_name"]
