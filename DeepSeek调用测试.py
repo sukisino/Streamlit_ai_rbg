@@ -143,6 +143,7 @@ with st.sidebar:
         st.session_state.world_information = world_information
     if st.button("保存当前世界",width="stretch"):
         save_session()
+        save_session_to_github()
 
 #侧边栏下部：新世界和历史世界管理面板
 with st.sidebar:
