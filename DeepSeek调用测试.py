@@ -60,7 +60,7 @@ def save_session():
         st.session_state.history_session_repo[st.session_state.world_label] = session_data
 
         #将其标记上修改脏标签
-        st.session_state.updata_dirty_mark.append(st.session_state.world_label)
+        st.session_state.updata_dirty_mark.add(st.session_state.world_label)
 
 #获取相应会话函数
 def get_session(session):
