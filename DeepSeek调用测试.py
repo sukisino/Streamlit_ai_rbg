@@ -30,7 +30,7 @@ if 'world_information' not in st.session_state:
 
 #创建修改脏标记集合
 if 'updata_dirty_mark' not in st.session_state:
-    st.session_state.updata_dirty_mark = ()
+    st.session_state.updata_dirty_mark = set()
 
 #创建删除脏标记集合
 if 'delete_dirty_mark' not in st.session_state:
@@ -47,7 +47,7 @@ def load_session_list():
 
 #保存当前会话的信息函数
 def save_session():
-    if st.session_state.world_name:
+    if st.session_state.messages:
         #构建会话对象存储数据
         session_data = {
             "world_label": st.session_state.world_label,
